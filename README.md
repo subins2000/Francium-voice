@@ -1,4 +1,4 @@
-# Francium/voice
+# [Francium/voice](http://subinsb.com/html5-record-mic-voice)
 
 This JavaScript software can record user voice and encode it as MP3 or WAV.
 
@@ -15,3 +15,5 @@ in **MP3** or **WAV** formats.
 The encoding is done in the background using worker processes.
 
 This small plugin has the ability to record the user's voice through microphone using the **HTML 5 Audio API**.
+
+Full Documentation - [http://subinsb.com/html5-record-mic-voice](http://subinsb.com/html5-record-mic-voice)
