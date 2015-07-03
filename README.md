@@ -17,3 +17,7 @@ The encoding is done in the background using worker processes.
 This small plugin has the ability to record the user's voice through microphone using the **HTML 5 Audio API**.
 
 Full Documentation - [http://subinsb.com/html5-record-mic-voice](http://subinsb.com/html5-record-mic-voice)
+
+# Innovation Award
+
+Francium Voice was nominated to win the JSClasses Innovation Award. Please [vote here](http://www.jsclasses.org/vote.html).
