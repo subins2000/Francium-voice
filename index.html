@@ -7,15 +7,23 @@
 		<script src="js/record.js"></script>
  	</head>
  	<body>
+    <h1>Francium Voice</h1>
+    <p>Created By <a href='http://subinsb.com'>Subin Siby</a> & Open Source community</p>
 		<audio controls src="" id="audio"></audio>
 		<div style="margin:10px;">
 			<a class="button" id="record">Record</a>
+      <a class="button disabled one" id="pause">Pause</a>
 			<a class="button disabled one" id="stop">Reset</a>
 			<a class="button disabled one" id="play">Play</a>
 			<a class="button disabled one" id="download">Download</a>
       <a class="button disabled one" id="base64">Base64 URL</a>
       <a class="button disabled one" id="mp3">MP3 URL</a>
+      <a class="button disabled one" id="save">Upload to Server</a>
 		</div>
+    <p>
+      <h2>NOTE</h2>
+      <p>Since Chrome version 47, Voice Recording works only on HTTPS sites. You can see the demo on HTTPS <a href="https://demos.subinsb.com/jquery/voice/">here</a>.</p>
+      </p>
 		<input class="button" type="checkbox" id="live"/>
 		<label for="live">Live Output</label>
 		<style>

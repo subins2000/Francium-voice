@@ -1,15 +1,15 @@
 /**
- * jQuery Voice plugin 0.3 (31st May 2015)
+ * Francium Voice plugin 0.4 (23 Dec 2015)
  * Copyright Subin Siby - http://subinsb.com
  * 
- * ------------------
- * Licensed under MIT
- * ------------------
+ * ---------------------
+ * Licensed under Apache
+ * ---------------------
  * 
- * A jQuery plugin to record, play & download microphone input sound from the user.
+ * A JavaScript plugin to record, play & download microphone input sound from the user.
  * NEEDS recorder.js and recorderWorker.js to work - https://github.com/mattdiamond/Recorderjs
  * 
- * To use MP3 conversion, NEEDS mp3Worker.js, libmp3lame.min.js and recorder.js from https://github.com/nusofthq/Recordmp3js/tree/master/js
+ * To use MP3 conversion, NEEDS mp3Worker.js, libmp3lame.min.js and recorderWorker.js from https://github.com/nusofthq/Recordmp3js/tree/master/js
  *
  * Full Documentation & Support - http://subinsb.com/html5-record-mic-voice
 */
@@ -68,13 +68,23 @@
     	});
     },
     
+    pause: function(){
+      this.recorder.stop();
+    },
+    
+    resume: function(){
+      this.recorder.record();
+    },
+    
     /**
      * Stop recording audio
      */
     stop: function(){
     	this.recorder.stop();
-    	this.recorder.clear();
-    	this.stream.stop();
+    	//this.recorder.clear();
+    	/*this.stream.getTracks().forEach(function (track) {
+        track.stop();
+      });*/
     	return this;
     },
     
