@@ -4,8 +4,8 @@
    * These URLs can't be used, so download these files from the URL, store locally and then
    * change the values `workerPath` and `mp3WorkerPath` in Fr.voice.js
    */
-  var WORKER_PATH = 'http://lab.subinsb.com/projects/jquery/voice/recorderWorker.js';
-  var mp3WorkerPath = 'http://lab.subinsb.com/projects/jquery/voice/mp3Worker.js';
+  var WORKER_PATH = 'http://lab.subinsb.com/projects/Francium/voice/recorderWorker.js';
+  var mp3WorkerPath = 'http://lab.subinsb.com/projects/Francium/voice/mp3Worker.js';
 
   var Recorder = function(source, cfg){
     var config = cfg || {};
