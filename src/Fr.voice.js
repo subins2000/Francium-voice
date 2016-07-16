@@ -38,6 +38,7 @@
     mp3WorkerPath: "src/mp3Worker.js",
     
     stream: false,
+    input: false,
     
     init_called: false,
     
@@ -62,24 +63,34 @@
     /**
      * Start recording audio
      */
-    record: function(output, callback){
-    	callback = callback || function(){};
+    record: function(output, finishCallback, recordingCallback){
+    	var finishCallback = finishCallback || function(){};
+      var recordingCallback = recordingCallback || function(){};
+      
       if(this.init_called === false){
     		this.init();
     		this.init_called = true;
     	}
-      $that = this;
+      
+      var $that = this;
     	navigator.getUserMedia({audio: true}, function(stream){
-    		var input = $that.context.createMediaStreamSource(stream);
+    		
+        /**
+         * Live Output
+         */
+        $that.input = $that.context.createMediaStreamSource(stream);
     		if(output === true){
-          input.connect($that.context.destination);
+          $that.input.connect($that.context.destination);
     		}
-    		$that.recorder = new Recorder(input, {
-          mp3WorkerPath : $that.mp3WorkerPath
+        
+    		$that.recorder = new Recorder($that.input, {
+          'mp3WorkerPath': $that.mp3WorkerPath,
+          'recordingCallback': recordingCallback
     		});
+        
     		$that.stream = stream;
     		$that.recorder.record();
-    		callback(stream);
+    		finishCallback(stream);
     	}, function() {
     		alert('No live audio input');
     	});

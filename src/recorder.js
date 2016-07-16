@@ -44,6 +44,7 @@ var Recorder = exports.Recorder = (function () {
         this.config = {
             bufferLen: 4096,
             numChannels: 2,
+            recordingCallback: function(){},
             mimeType: 'audio/wav'
         };
         this.recording = false;
@@ -55,13 +56,17 @@ var Recorder = exports.Recorder = (function () {
         Object.assign(this.config, cfg);
         this.context = source.context;
         this.node = (this.context.createScriptProcessor || this.context.createJavaScriptNode).call(this.context, this.config.bufferLen, this.config.numChannels, this.config.numChannels);
-
+        var $that = this;
         this.node.onaudioprocess = function (e) {
             if (!_this.recording) return;
 
             var buffer = [];
+            var channelData;
             for (var channel = 0; channel < _this.config.numChannels; channel++) {
                 buffer.push(e.inputBuffer.getChannelData(channel));
+                channelData = e.inputBuffer.getChannelData(channel)
+                buffer.push(channelData);
+                $that.config.recordingCallback(channelData);
             }
             _this.worker.postMessage({
                 command: 'record',

@@ -9,6 +9,11 @@
  	<body>
     <h1>Francium Voice</h1>
     <p>Created By <a href='http://subinsb.com'>Subin Siby</a> & Open Source community</p>
+    <p>
+      <h2>NOTE</h2>
+      <p>Since Chrome version 47, Voice Recording works only on HTTPS sites. You can see the demo on HTTPS <a href="https://demos.subinsb.com/jquery/voice/">here</a>.</p>
+    </p>
+    <h2>Record</h2>
 		<audio controls src="" id="audio"></audio>
 		<div style="margin:10px;">
 			<a class="button" id="record">Record</a>
@@ -20,12 +25,9 @@
       <a class="button disabled one" id="mp3">MP3 URL</a>
       <a class="button disabled one" id="save">Upload to Server</a>
 		</div>
-    <p>
-      <h2>NOTE</h2>
-      <p>Since Chrome version 47, Voice Recording works only on HTTPS sites. You can see the demo on HTTPS <a href="https://demos.subinsb.com/jquery/voice/">here</a>.</p>
-      </p>
 		<input class="button" type="checkbox" id="live"/>
 		<label for="live">Live Output</label>
+    <canvas id="level" height="200" width="500"></canvas>
 		<style>
 		.button{
 			display: inline-block;
@@ -56,6 +58,9 @@
 			box-shadow:none;
 			opacity:0.7;
 		}
+    canvas{
+      display: block;
+    }
 		</style>
  	</body>
 </html>
