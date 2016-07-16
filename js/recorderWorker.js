@@ -1,3 +1,7 @@
+/**
+ * Deprecated. Since Fr.voice >= 0.5 This file is not needed
+ */
+
 var recLength = 0,
   recBuffersL = [],
   recBuffersR = [],
