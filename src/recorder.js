@@ -66,7 +66,7 @@ var Recorder = exports.Recorder = (function () {
                 buffer.push(e.inputBuffer.getChannelData(channel));
                 channelData = e.inputBuffer.getChannelData(channel)
                 buffer.push(channelData);
-                $that.config.recordingCallback(channelData);
+                $that.config.recordingCallback(buffer);
             }
             _this.worker.postMessage({
                 command: 'record',
