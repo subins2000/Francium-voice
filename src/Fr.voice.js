@@ -19,7 +19,7 @@
 /**
 .---------------------------------------------------------------------------.
 |  Software:      Francium Voice                                            |
-|  Version:       0.5 (Last Updated on 2016 July 16)                        |
+|  Version:       0.5.1 (Last Updated on 2016 December 08)                  |
 |  Documentation: http://subinsb.com/html5-record-mic-voice                 |
 |  Contribute:    https://github.com/subins2000/Francium-voice              |
 '---------------------------------------------------------------------------'
@@ -41,6 +41,11 @@
     input: false,
     
     init_called: false,
+
+    /**
+     * @type function setTimeout() function will be stored here
+     */
+    stopRecordingTimeout: false,
     
     /**
      * Initialize. Set up variables.
@@ -96,6 +101,9 @@
     	});
     },
     
+    /**
+     * Pause the recording
+     */
     pause: function(){
       this.recorder.stop();
     },
@@ -105,7 +113,9 @@
     },
     
     /**
-     * Stop recording audio
+     * Stop recording audio.
+     * This will reset the recorded audio and the
+     * recorded audio can't be played or exported after.
      */
     stop: function(){
     	this.recorder.stop();
@@ -129,9 +139,9 @@
             callback(blob);
           }else if (type == "base64"){
             var reader = new window.FileReader();
-            reader.readAsDataURL(blob); 
+            reader.readAsDataURL(blob);
             reader.onloadend = function() {
-              base64data = reader.result;            
+              base64data = reader.result;
               callback(base64data);
             };
           }else if(type == "URL"){
@@ -140,6 +150,22 @@
           }
         });
       }
+    },
+
+    /**
+     * Pause the recording after a specific time
+     * @param  integer time Time in milliseconds
+     * @return void
+     */
+    stopRecordingAfter: function(time, callback){
+      var callback = callback || function(){};
+
+      clearTimeout(this.stopRecordingTimeout);
+      this.stopRecordingTimeout = setTimeout(function(){
+        Fr.voice.pause();
+        callback();
+      }, time);
     }
+
   };
 })(window);
