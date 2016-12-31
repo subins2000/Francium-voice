@@ -94,43 +94,54 @@ $(document).ready(function(){
   });
 
   $(document).on("click", "#play:not(.disabled)", function(){
-    Fr.voice.export(function(url){
-      $("#audio").attr("src", url);
-      $("#audio")[0].play();
-    }, "URL");
+    if($(this).parent().data("type") === "mp3"){
+      Fr.voice.exportMP3(function(url){
+        $("#audio").attr("src", url);
+        $("#audio")[0].play();
+      }, "URL");
+    }else{
+      Fr.voice.export(function(url){
+        $("#audio").attr("src", url);
+        $("#audio")[0].play();
+      }, "URL");
+    }
     restore();
   });
 
   $(document).on("click", "#download:not(.disabled)", function(){
-    Fr.voice.export(function(url){
-      $("<a href='"+url+"' download='MyRecording.wav'></a>")[0].click();
-    }, "URL");
+    if($(this).parent().data("type") === "mp3"){
+      Fr.voice.exportMP3(function(url){
+        $("<a href='" + url + "' download='MyRecording.mp3'></a>")[0].click();
+      }, "URL");
+    }else{
+      Fr.voice.export(function(url){
+        $("<a href='" + url + "' download='MyRecording.wav'></a>")[0].click();
+      }, "URL");
+    }
     restore();
   });
 
   $(document).on("click", "#base64:not(.disabled)", function(){
-    Fr.voice.export(function(url){
-      console.log("Here is the base64 URL : " + url);
-      alert("Check the web console for the URL");
+    if($(this).parent().data("type") === "mp3"){
+      Fr.voice.exportMP3(function(url){
+        console.log("Here is the base64 URL : " + url);
+        alert("Check the web console for the URL");
 
-      $("<a href='"+ url +"' target='_blank'></a>")[0].click();
-    }, "base64");
-    restore();
-  });
+        $("<a href='"+ url +"' target='_blank'></a>")[0].click();
+      }, "base64");
+    }else{
+      Fr.voice.export(function(url){
+        console.log("Here is the base64 URL : " + url);
+        alert("Check the web console for the URL");
 
-  $(document).on("click", "#mp3:not(.disabled)", function(){
-    alert("The conversion to MP3 will take some time (even 10 minutes), so please wait....");
-    Fr.voice.export(function(url){
-      console.log("Here is the MP3 URL : " + url);
-      alert("Check the web console for the URL");
-
-      $("<a href='"+ url +"' target='_blank'></a>")[0].click();
-    }, "mp3");
+        $("<a href='"+ url +"' target='_blank'></a>")[0].click();
+      }, "base64");
+    }
     restore();
   });
 
   $(document).on("click", "#save:not(.disabled)", function(){
-    Fr.voice.export(function(blob){
+    function upload(blob){
       var formData = new FormData();
       formData.append('file', blob);
 
@@ -146,7 +157,12 @@ $(document).ready(function(){
           alert("Saved In Server. See audio element's src for URL");
         }
       });
-    }, "blob");
+    }
+    if($(this).parent().data("type") === "mp3"){
+      Fr.voice.exportMP3(upload, "blob");
+    }else{
+      Fr.voice.export(upload, "blob");
+    }
     restore();
   });
 });

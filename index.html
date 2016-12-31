@@ -15,17 +15,26 @@
     </p>
     <h2>Record</h2>
 		<audio controls src="" id="audio"></audio>
-		<div style="margin:10px;">
-			<a class="button recordButton" id="record">Record</a>
+    <div>
+      <a class="button recordButton" id="record">Record</a>
       <a class="button recordButton" id="recordFor5">Record For 5 Seconds</a>
       <a class="button disabled one" id="pause">Pause</a>
-			<a class="button disabled one" id="stop">Reset</a>
+      <a class="button disabled one" id="stop">Reset</a>
+    </div>
+		<div data-type="wav">
+			<p>WAV Controls:</p>
 			<a class="button disabled one" id="play">Play</a>
 			<a class="button disabled one" id="download">Download</a>
       <a class="button disabled one" id="base64">Base64 URL</a>
-      <a class="button disabled one" id="mp3">MP3 URL</a>
       <a class="button disabled one" id="save">Upload to Server</a>
 		</div>
+    <div data-type="mp3">
+      <p>MP3 Controls:</p>
+      <a class="button disabled one" id="play">Play</a>
+      <a class="button disabled one" id="download">Download</a>
+      <a class="button disabled one" id="base64">Base64 URL</a>
+      <a class="button disabled one" id="save">Upload to Server</a>
+    </div>
 		<input class="button" type="checkbox" id="live"/>
 		<label for="live">Live Output</label>
     <canvas id="level" height="200" width="500"></canvas>
