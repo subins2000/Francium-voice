@@ -43,7 +43,7 @@ var Recorder = exports.Recorder = (function () {
 
 		this.config = {
 			bufferLen: 4096,
-			numChannels: 2,
+			numChannels: 1,
 			recordingCallback: function(){},
 			mimeType: 'audio/wav'
 		};
@@ -54,9 +54,10 @@ var Recorder = exports.Recorder = (function () {
 		};
 
 		Object.assign(this.config, cfg);
+
 		this.context = source.context;
-		this.node = (this.context.createScriptProcessor || this.context.createJavaScriptNode).call(this.context, this.config.bufferLen, this.config.numChannels, this.config.numChannels);
-		var $that = this;
+		this.node = (this.context.createScriptProcessor || this.context.createJavaScriptNode).call(this.context, this.config.bufferLen, 2, 2);
+
 		this.node.onaudioprocess = function (e) {
 			if (!_this.recording) return;
 
@@ -66,7 +67,7 @@ var Recorder = exports.Recorder = (function () {
 				buffer.push(e.inputBuffer.getChannelData(channel));
 				channelData = e.inputBuffer.getChannelData(channel)
 				buffer.push(channelData);
-				$that.config.recordingCallback(buffer);
+				_this.config.recordingCallback(buffer);
 			}
 			_this.worker.postMessage({
 				command: 'record',
@@ -74,7 +75,12 @@ var Recorder = exports.Recorder = (function () {
 			});
 		};
 
-		source.connect(this.node);
+		this.analyser = this.context.createAnalyser();
+		this.analyser.smoothingTimeConstant = 0.3;
+		this.analyser.fftSize = 1024;
+
+		source.connect(this.analyser);
+		this.analyser.connect(this.node);
 		this.node.connect(this.context.destination); //this should not be necessary
 
 		var self = {};
@@ -288,22 +294,23 @@ var Recorder = exports.Recorder = (function () {
 		key: 'parseWav',
 		value: function parseWav(wav){
 			function readInt(i, bytes) {
-			  var ret = 0,
-			  shft = 0;
+				var ret = 0,
+				shft = 0;
 
-			  while (bytes) {
-				ret += wav[i] << shft;
-				shft += 8;
-				  i++;
-				bytes--;
-			  }
-			  return ret;
+				while (bytes) {
+					ret += wav[i] << shft;
+					shft += 8;
+					i++;
+					bytes--;
+				}
+				return ret;
 			}
 			if (readInt(20, 2) != 1) throw 'Invalid compression code, not PCM';
+			if (readInt(22, 2) != 1) throw 'Invalid number of channels, not 1';
 			return {
-			  sampleRate: readInt(24, 4),
-			  bitsPerSample: readInt(34, 2),
-			  samples: wav.subarray(44)
+				sampleRate: readInt(24, 4),
+				bitsPerSample: readInt(34, 2),
+				samples: wav.subarray(44)
 			};
 		}
 	}, {
@@ -311,9 +318,9 @@ var Recorder = exports.Recorder = (function () {
 		value: function Uint8ArrayToFloat32Array(u8a){
 			var f32Buffer = new Float32Array(u8a.length);
 			for (var i = 0; i < u8a.length; i++) {
-			  var value = u8a[i<<1] + (u8a[(i<<1)+1]<<8);
-			  if (value >= 0x8000) value |= ~0x7FFF;
-			  f32Buffer[i] = value / 0x8000;
+				var value = u8a[i << 1] + (u8a[(i << 1) + 1] << 8);
+				if (value >= 0x8000) value |= ~0x7FFF;
+				f32Buffer[i] = value / 0x8000;
 			}
 			return f32Buffer;
 		}
@@ -325,47 +332,48 @@ var Recorder = exports.Recorder = (function () {
 			len = bytes.byteLength;
 
 			for (var i = 0; i < len; i++) {
-			  binary += String.fromCharCode( bytes[ i ] );
+				binary += String.fromCharCode( bytes[ i ] );
 			}
 			return window.btoa( binary );
 		}
 	}, {
 		key: 'exportMP3',
 		value: function exportMP3(cb){
-		  // MP3 conversion
-		  this.exportWAV(function(){});
-		  var currCallback = cb || this.config.callback;
+			// MP3 conversion
+			var currCallback = cb || this.config.callback;
 
-		  var $that = this;
-		  var encoderWorker = new Worker(this.config.mp3WorkerPath);
-		  this.worker.onmessage = function(e){
-			var blob = e.data.data;
+			var $that = this;
+			var encoderWorker = new Worker(this.config.mp3WorkerPath);
 
-			var arrayBuffer;
-			var fileReader = new FileReader();
+			this.exportWAV(function(blob){
+				var arrayBuffer;
+				var fileReader = new FileReader();
 
-			fileReader.onload = function(){
-			  arrayBuffer = this.result;
-			  var buffer = new Uint8Array(arrayBuffer),
-			  data = $that.parseWav(buffer);
+				fileReader.onload = function(){
+					arrayBuffer = this.result;
+					var buffer = new Uint8Array(arrayBuffer),
+					data = $that.parseWav(buffer);
 
-			  encoderWorker.postMessage({ cmd: 'init', config:{
-				mode : 3,
-				channels:1,
-				samplerate: data.sampleRate,
-				bitrate: data.bitsPerSample
-			  }});
+					encoderWorker.postMessage({ cmd: 'init', config:{
+						mode: 3,
+						channels: 1,
+						samplerate: data.sampleRate,
+						bitrate: data.bitsPerSample
+					}});
 
-			  encoderWorker.postMessage({ cmd: 'encode', buf: $that.Uint8ArrayToFloat32Array(data.samples) });
-			  encoderWorker.onmessage = function(e) {
-				if (e.data.cmd == 'data') {
-				  currCallback(new Blob([e.data.buf], {type: "audio/mpeg"}));
-				  console.log("Done converting to MP3");
-				}
-			  };
-			};
-			fileReader.readAsArrayBuffer(blob);
-		  }
+					encoderWorker.postMessage({ cmd: 'encode', buf: $that.Uint8ArrayToFloat32Array(data.samples) });
+					encoderWorker.postMessage({
+						cmd: 'finish'
+					});
+					encoderWorker.onmessage = function(e) {
+						if (e.data.cmd === 'data') {
+							currCallback(new Blob([new Uint8Array(e.data.buf)], {type: "audio/mp3"}));
+							console.log("Done converting to MP3");
+						}
+					};
+				};
+				fileReader.readAsArrayBuffer(blob);
+			});
 		}
 	}], [{
 		key: 'forceDownload',
@@ -400,43 +408,43 @@ var _classCallCheck = function (instance, Constructor) { if (!(instance instance
 var WORKER_ENABLED = !!(global === global.window && global.URL && global.Blob && global.Worker);
 
 var InlineWorker = (function () {
-  function InlineWorker(func, self) {
+	function InlineWorker(func, self) {
 	var _this = this;
 
 	_classCallCheck(this, InlineWorker);
 
 	if (WORKER_ENABLED) {
-	  var functionBody = func.toString().trim().match(/^function\s*\w*\s*\([\w\s,]*\)\s*{([\w\W]*?)}$/)[1];
-	  var url = global.URL.createObjectURL(new global.Blob([functionBody], { type: "text/javascript" }));
+		var functionBody = func.toString().trim().match(/^function\s*\w*\s*\([\w\s,]*\)\s*{([\w\W]*?)}$/)[1];
+		var url = global.URL.createObjectURL(new global.Blob([functionBody], { type: "text/javascript" }));
 
-	  return new global.Worker(url);
+		return new global.Worker(url);
 	}
 
 	this.self = self;
 	this.self.postMessage = function (data) {
-	  setTimeout(function () {
+		setTimeout(function () {
 		_this.onmessage({ data: data });
-	  }, 0);
+		}, 0);
 	};
 
 	setTimeout(function () {
-	  func.call(self);
+		func.call(self);
 	}, 0);
-  }
+	}
 
-  _createClass(InlineWorker, {
+	_createClass(InlineWorker, {
 	postMessage: {
-	  value: function postMessage(data) {
+		value: function postMessage(data) {
 		var _this = this;
 
 		setTimeout(function () {
-		  _this.self.onmessage({ data: data });
+			_this.self.onmessage({ data: data });
 		}, 0);
-	  }
+		}
 	}
-  });
+	});
 
-  return InlineWorker;
+	return InlineWorker;
 })();
 
 module.exports = InlineWorker;
