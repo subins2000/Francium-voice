@@ -19,7 +19,7 @@
 /**
 .---------------------------------------------------------------------------.
 |  Software:      Francium Voice                                            |
-|  Version:       0.5.2 (Last Updated on 2016 December 31)                  |
+|  Version:       0.6 (Last Updated on 2017 Feruary 01)                     |
 |  Documentation: http://subinsb.com/html5-record-mic-voice                 |
 |  Contribute:    https://github.com/subins2000/Francium-voice              |
 '---------------------------------------------------------------------------'
