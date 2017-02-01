@@ -14,12 +14,16 @@
       <p>Since Chrome version 47, Voice Recording works only on HTTPS sites. You can see the demo on HTTPS <a href="https://demos.subinsb.com/jquery/voice/">here</a>.</p>
     </p>
     <h2>Record</h2>
-		<audio controls src="" id="audio"></audio>
+		<audio controls id="audio"></audio>
     <div>
       <a class="button recordButton" id="record">Record</a>
       <a class="button recordButton" id="recordFor5">Record For 5 Seconds</a>
       <a class="button disabled one" id="pause">Pause</a>
       <a class="button disabled one" id="stop">Reset</a>
+    </div><br/>
+    <div>
+      <input class="button" type="checkbox" id="live"/>
+      <label for="live">Live Output</label>
     </div>
 		<div data-type="wav">
 			<p>WAV Controls:</p>
@@ -35,8 +39,6 @@
       <a class="button disabled one" id="base64">Base64 URL</a>
       <a class="button disabled one" id="save">Upload to Server</a>
     </div>
-		<input class="button" type="checkbox" id="live"/>
-		<label for="live">Live Output</label>
     <canvas id="level" height="200" width="500"></canvas>
 		<style>
 		.button{
