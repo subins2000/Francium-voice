@@ -53,6 +53,12 @@ function makeWaveform(){
 }
 
 $(document).ready(function(){
+
+  /**
+   * Configure
+   */
+  Fr.voice.mp3WorkerPath = "../../js/mp3-encoder/mp3Worker.js";
+
   $(document).on("click", "#record:not(.disabled)", function(){
     Fr.voice.record($("#live").is(":checked"), function(){
       $(".recordButton").addClass("disabled");
@@ -146,7 +152,7 @@ $(document).ready(function(){
       formData.append('file', blob);
 
       $.ajax({
-        url: "upload.php",
+        url: "php-server/upload.php",
         type: 'POST',
         data: formData,
         contentType: false,

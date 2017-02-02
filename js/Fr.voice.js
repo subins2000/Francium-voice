@@ -30,12 +30,9 @@
 	Fr.voice = {
 
 		/**
-		 * Path to mp3Worker.js
-		 * Only needed if you're gonna use MP3 conversion
-		 * You should also include libmp3lame.min.js
-		 * You can get both files from https://github.com/subins2000/Francium-voice/blob/master/js/
+		 * @type string Path to mp3Worker.js
 		 */
-		mp3WorkerPath: "src/mp3Worker.js",
+		mp3WorkerPath: "js/mp3-encoder/mp3Worker.js",
 
 		stream: false,
 		input: false,
