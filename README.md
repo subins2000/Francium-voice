@@ -1,5 +1,7 @@
 # [Francium/voice](http://subinsb.com/html5-record-mic-voice)
 
+**THIS PROJECT IS DEPRECATED**
+
 This **JavaScript** library can record user voice and encode it as MP3 or WAV. This small plugin has the ability to record the user's voice through microphone using the **HTML 5 Audio API**.
 
 It can start or stop recording the user voice from a microphone or audio source input.
