@@ -58,7 +58,7 @@
 					|| navigator.mozGetUserMedia || navigator.msGetUserMedia;
 				window.URL = window.URL || window.webkitURL;
 
-				if(navigator.getUserMedia === false){
+				if(!navigator.getUserMedia && !navigator.mediaDevices){
 					alert('getUserMedia() is not supported in your browser');
 				}
 				this.context = new AudioContext();
@@ -80,7 +80,7 @@
 			}
 
 			var $that = this;
-			navigator.getUserMedia({audio: true}, function(stream){
+			var onGetUserMedia = function(stream){
 
 			/**
 			 * Live Output
@@ -98,9 +98,16 @@
 				$that.stream = stream;
 				$that.recorder.record();
 				finishCallback(stream);
-			}, function() {
+			};
+			var onGetUserMediaError = function() {
 				alert('No live audio input');
-			});
+			};
+			
+			if (navigator.mediaDevices) {
+        			navigator.mediaDevices.getUserMedia({audio: true}).then(onGetUserMedia, onGetUserMediaError);
+    			} else {
+        			navigator.getUserMedia({audio: true}, onGetUserMedia, onGetUserMediaError);
+    			}
 		},
 
 		/**
